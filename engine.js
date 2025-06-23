@@ -115,6 +115,8 @@ class VNEngine {
     this.nm = document.getElementById("vn-name");
     this.tx = document.getElementById("vn-text");
     this.ch = document.getElementById("vn-choices");
+    this.ui = document.getElementById("vn-ui");
+    this.fadeIn(this.ui);
 
     document.addEventListener("click", e => {
       if (this.paused) return;
@@ -129,8 +131,8 @@ class VNEngine {
   }
 
   /* --- helpers --- */
-  fadeOut(el) { el.classList.add("hidden"); }
-  fadeIn(el)  { el.classList.remove("hidden"); }
+  fadeOut(el) { el.style.opacity = 0; }
+  fadeIn(el)  { el.style.opacity = 1; }
 
   setImage(el, src) {
     if (!src) { this.fadeOut(el); return; }              // спрятать элемент

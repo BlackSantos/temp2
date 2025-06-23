@@ -4,10 +4,10 @@ define characters:
     e = "Я"
 
 define sprites:
-    anna = "images/anna.png"
+    anna = "anna.png"
 
 define images:
-    background1 = "images/bg1.jpg"
+    background1 = "bg1.jpg"
 
 script:
     label start:
