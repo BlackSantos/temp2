@@ -59,6 +59,7 @@ function parseStory(raw) {
     if (line.startsWith("show "))  { const id = line.slice(5).trim();
       script.push({ type: "show", sprite: sprites[id] || id }); continue; }
     if (line.startsWith("jump "))  { script.push({ type: "jump", label: line.slice(5).trim() }); continue; }
+    if (line.startsWith("call "))  { script.push({ type: "call", label: line.slice(5).trim() }); continue; }
 
     /* return;  -> конец игры */
     if (/^return\s*;?\s*$/.test(line)) { script.push({ type: "return" }); continue; }
@@ -78,14 +79,15 @@ function parseStory(raw) {
         const optPad = ind(rawOpt), t = rawOpt.trimStart().match(/^"(.+)"\s*:\s*$/);
         if (!t) { i++; continue; }
         const text = t[1]; i++;
-        let jump = null;
+        let jump = null, isCall = false;
         while (i < ls.length) {
           const inr = noComment(ls[i]); if (!inr.trim()) { i++; continue; }
           if (ind(inr) <= optPad) break;
-          const jm = inr.trimStart().match(/^jump\s+(\w+)$/); if (jm) jump = jm[1];
+          const jm = inr.trimStart().match(/^(jump|call)\s+(\w+)$/);
+          if (jm) { isCall = jm[1] === "call"; jump = jm[2]; }
           i++;
         }
-        opts.push({ text, jump });
+        opts.push({ text, jump, call: isCall });
       }
       script.push({ type: "choice", options: opts });
       continue;
@@ -106,6 +108,7 @@ class VNEngine {
     this.script = script; this.assetsPath = assetsPath;
     this.labels = Object.fromEntries(script.map((c, i) => c.type === "label" ? [c.name, i] : null).filter(Boolean));
     this.pos = 0; this.justJumped = true; this.paused = false;
+    this.stack = [];
 
     this.isTyping = false; this.fullText = ""; this.timer = null;
 
@@ -147,6 +150,14 @@ class VNEngine {
 
   next() { this.pos++; this.run(); }
   jump(l) { if (this.labels[l] != null) { this.pos = this.labels[l]; this.justJumped = true; this.run(); } }
+  call(l) {
+    if (this.labels[l] != null) {
+      this.stack.push(this.pos + 1);
+      this.pos = this.labels[l];
+      this.justJumped = true;
+      this.run();
+    }
+  }
 
   run() {
     if (this.paused) return;
@@ -158,10 +169,15 @@ class VNEngine {
       case "say":    this.showSay(c);                           break;
       case "choice": this.showChoices(c.options);               break;
       case "jump":   this.jump(c.label);                        break;
+      case "call":   this.call(c.label);                        break;
       case "label":
         if (this.justJumped) { this.justJumped = false; this.next(); }
+        else if (this.stack.length) { this.pos = this.stack.pop(); this.run(); }
         break;
-      case "return": this.endGame();                            break;
+      case "return":
+        if (this.stack.length) { this.pos = this.stack.pop(); this.justJumped = false; this.next(); }
+        else this.endGame();
+        break;
     }
   }
 
@@ -191,7 +207,11 @@ class VNEngine {
       b.textContent = o.text;
       b.onclick = () => {
         this.ch.innerHTML = "";
-        o.jump ? this.jump(o.jump) : this.next();
+        if (o.jump) {
+          o.call ? this.call(o.jump) : this.jump(o.jump);
+        } else {
+          this.next();
+        }
       };
       this.ch.appendChild(b);
     });
