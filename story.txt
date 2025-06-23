@@ -1,0 +1,38 @@
+define characters:
+    narrator = narrator
+    a = "Анна"
+    e = "Я"
+
+define sprites:
+    anna = "images/anna.png"
+
+define images:
+    background1 = "images/bg1.jpg"
+
+script:
+    label start:
+        scene background1
+        "Я открыл глаза."
+        show anna
+        "Передо мной какая-то девушка."
+        e "Ты кто?"
+        "Девушка улыбнулась."
+        a "Я Анна."
+        menu(a "А ты?"):
+            "Меня зовут игрок.":
+                jump player
+            "Я не знаю.":
+                jump idk
+
+    label player:
+        e "Я игрок."
+        a "О как..."
+
+    label idk:
+        e "Не знаю..."
+        a "Ну дела..."
+
+    a "Ладно, пофиг!"
+    "Она улыбнулась."
+    a "думаю, можно заканчивать игру."
+    return;

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>VN Demo</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!------- СЦЕНА ------->
+  <img id="vn-background" class="hidden" />
+  <img id="vn-sprite"     class="hidden" />
+
+  <!------- UI текста/выборов ------->
+  <div id="vn-ui">
+    <div id="vn-name"></div>
+    <div id="vn-text"></div>
+    <div id="vn-choices"></div>
+  </div>
+
+  <!------- ГЛАВНОЕ МЕНЮ ------->
+  <div id="main-menu" class="overlay">
+    <h1>Визуальная новелла</h1>
+    <button id="btn-start">Начать игру</button>
+  </div>
+
+  <!------- МЕНЮ ПАУЗЫ (Esc) ------->
+  <div id="pause-menu" class="overlay hidden">
+    <h2>Пауза</h2>
+    <button id="btn-continue">Продолжить</button>
+    <button id="btn-to-main">В главное меню</button>
+  </div>
+
+  <script src="engine.js"></script>
+</body>
+</html>
