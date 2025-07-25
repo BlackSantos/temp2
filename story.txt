@@ -4,10 +4,10 @@ define characters:
     e = "Я"
 
 define sprites:
-    anna = "images/anna.png"
+    anna = "anna.png"
 
 define images:
-    background1 = "images/bg1.jpg"
+    background1 = "bg1.jpg"
 
 script:
     label start:
@@ -20,17 +20,19 @@ script:
         a "Я Анна."
         menu(a "А ты?"):
             "Меня зовут игрок.":
-                jump player
+                call player
             "Я не знаю.":
-                jump idk
+                call idk
 
     label player:
         e "Я игрок."
         a "О как..."
+        return
 
     label idk:
         e "Не знаю..."
         a "Ну дела..."
+        return
 
     a "Ладно, пофиг!"
     "Она улыбнулась."
